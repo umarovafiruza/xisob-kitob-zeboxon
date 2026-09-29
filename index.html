@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Oilaviy Expense Tracker | Mobil Ilova</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <div class="container">
+    <!-- SHAPKA -->
+    <header class="app-header">
+      <div>
+        <h1 class="brand-title">Oilaviy Byudjet</h1>
+        <p class="brand-subtitle">Kirim va Chiqimlar nazorati</p>
+      </div>
+      <div class="header-right">
+        <button type="button" class="btn-clear-ghost" id="btnClearAll" title="Barcha ma'lumotlarni tozalash">
+          Tozalash
+        </button>
+      </div>
+    </header>
+
+    <!-- OYMA-OY NAVIGATSIYA CHIZIG'I (MONTH ARXIVI) -->
+    <section class="month-nav-bar">
+      <button type="button" class="btn-month-nav" id="btnPrevMonth" title="O'tgan oy">◀</button>
+      <div class="month-label-wrap">
+        <span class="current-month-text" id="currentMonthLabel">Sentabr, 2026</span>
+        <button type="button" class="btn-today-shortcut" id="btnTodayShortcut" style="display: none;">
+          Joriy oyga qaytish
+        </button>
+      </div>
+      <button type="button" class="btn-month-nav" id="btnNextMonth" title="Keyingi oy">▶</button>
+    </section>
+
+    <!-- KOMPYUTER UCHUN YUQORI TABLAR -->
+    <nav class="desktop-tabs">
+      <button type="button" class="desktop-tab-btn active" data-tab="tab-overview">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+          <polyline points="9 22 9 12 15 12 15 22"></polyline>
+        </svg>
+        <span>Asosiy</span>
+      </button>
+      <button type="button" class="desktop-tab-btn" data-tab="tab-add">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="12" y1="5" x2="12" y2="19"></line>
+          <line x1="5" y1="12" x2="19" y2="12"></line>
+        </svg>
+        <span>Qo'shish</span>
+      </button>
+      <button type="button" class="desktop-tab-btn" data-tab="tab-analytics">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="18" y1="20" x2="18" y2="10"></line>
+          <line x1="12" y1="20" x2="12" y2="4"></line>
+          <line x1="6" y1="20" x2="6" y2="14"></line>
+        </svg>
+        <span>Tahlil</span>
+      </button>
+      <button type="button" class="desktop-tab-btn" data-tab="tab-history">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="8" y1="6" x2="21" y2="6"></line>
+          <line x1="8" y1="12" x2="21" y2="12"></line>
+          <line x1="8" y1="18" x2="21" y2="18"></line>
+          <line x1="3" y1="6" x2="3.01" y2="6"></line>
+          <line x1="3" y1="12" x2="3.01" y2="12"></line>
+          <line x1="3" y1="18" x2="3.01" y2="18"></line>
+        </svg>
+        <span>Tarix</span>
+      </button>
+    </nav>
+
+    <!-- ========================================================
+         1-SAHIFA: ASOSIY PANEL (BALANS, BYUDJET VA HISOBOT)
+         ======================================================== -->
+    <section class="tab-content active" id="tab-overview">
+      
+      <!-- Asosiy Balans Vitrinasi -->
+      <div class="balance-hero-card">
+        <div class="balance-label">Hamyonda qolgan sof mablag'</div>
+        <div class="balance-amount" id="netBalanceDisplay">0 so'm</div>
+
+        <!-- Kirim va Chiqim qatorlari -->
+        <div class="balance-flow-row">
+          <div class="flow-box">
+            <span class="flow-title">
+              <span class="flow-dot green"></span>
+              Kirim (Daromad)
+            </span>
+            <div class="flow-val income-text" id="monthIncomeDisplay">+ 0 so'm</div>
+          </div>
+          <div class="flow-box">
+            <span class="flow-title">
+              <span class="flow-dot red"></span>
+              Chiqim (Xarajat)
+            </span>
+            <div class="flow-val expense-text" id="monthExpenseDisplay">- 0 so'm</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tezkor Qo'shish Tugmalari -->
+      <div class="quick-action-grid">
+        <button type="button" class="btn-action-tile action-expense" id="btnQuickAddExpense">
+          <span>− Xarajat kiritish</span>
+        </button>
+        <button type="button" class="btn-action-tile action-income" id="btnQuickAddIncome">
+          <span>+ Daromad kiritish</span>
+        </button>
+      </div>
+
+      <!-- Oylik Byudjet Kartasi -->
+      <div class="budget-card">
+        <div class="budget-header">
+          <span class="budget-title">Oylik Reja Chegarasi</span>
+          <button type="button" class="btn-edit-budget" id="btnOpenBudgetModal">
+            O'zgartirish
+          </button>
+        </div>
+
+        <div class="budget-progress-wrap">
+          <div class="budget-progress-bar">
+            <div class="budget-progress-fill fill-safe" id="budgetProgressFill" style="width: 0%;"></div>
+          </div>
+          <div class="budget-progress-footer">
+            <span id="budgetPercentText">0% ishlatildi</span>
+            <span id="budgetPlanSubtext">Limit: 0 so'm</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Telegram Oylik Hisobot Ulashish -->
+      <div class="share-action-card">
+        <div>
+          <div class="share-text">Oylik hisobotni ulashish</div>
+          <div style="font-size: 11px; color: var(--text-muted); margin-top: 2px;">
+            Oilaviy Telegram guruhga tayyor xabar
+          </div>
+        </div>
+        <button type="button" class="btn-copy-report" id="btnCopyReport">
+          <span>📋 Nusxalash</span>
+        </button>
+      </div>
+
+      <!-- So'nggi amallar -->
+      <div class="card">
+        <div class="card-title">
+          <span>So'nggi amallar</span>
+          <button type="button" style="background: none; border: none; color: var(--accent); font-size: 13px; font-weight: 600; cursor: pointer;" id="btnGoToHistory">
+            Barchasi ➔
+          </button>
+        </div>
+        <ul class="expenses-list" id="recentTransactionsList">
+          <!-- JS orqali to'ldiriladi -->
+        </ul>
+      </div>
+
+    </section>
+
+    <!-- ========================================================
+         2-SAHIFA: QO'SHISH (KIRIM VA CHIQIM FORMASI)
+         ======================================================== -->
+    <section class="tab-content" id="tab-add">
+      <div class="card">
+        <h2 class="card-title" id="formHeaderTitle">Yangi amal kiritish</h2>
+
+        <!-- Rejimni tanlash (Kirim yoki Chiqim) -->
+        <div class="type-toggle-wrap">
+          <button type="button" class="btn-type-toggle active-expense" id="btnToggleExpense">
+            <span>🔴 Chiqim (Xarajat)</span>
+          </button>
+          <button type="button" class="btn-type-toggle" id="btnToggleIncome">
+            <span>🟢 Kirim (Daromad)</span>
+          </button>
+        </div>
+
+        <!-- Muvaffaqiyat xabarnomasi -->
+        <div class="toast-msg toast-success" id="addSuccessToast">
+          <span id="toastText">✓ Amal muvaffaqiyatli saqlandi!</span>
+        </div>
+
+        <form id="transactionForm">
+          <!-- Nomi -->
+          <div class="form-group">
+            <label for="txTitle" class="form-label" id="labelTxTitle">Xarajat nomi</label>
+            <input 
+              type="text" 
+              id="txTitle" 
+              class="form-control" 
+              placeholder="Masalan: Bozorlik, Go'sht, Dorixona..." 
+              required 
+              autocomplete="off"
+            >
+          </div>
+
+          <!-- Miqdori va Sanasi -->
+          <div class="form-row form-group">
+            <div>
+              <label for="txAmount" class="form-label">Miqdori (so'mda)</label>
+              <input 
+                type="number" 
+                id="txAmount" 
+                class="form-control" 
+                placeholder="Masalan: 350000" 
+                min="1" 
+                step="any" 
+                required
+              >
+            </div>
+            <div>
+              <label for="txDate" class="form-label">Sana</label>
+              <input 
+                type="date" 
+                id="txDate" 
+                class="form-control" 
+                required
+              >
+            </div>
+          </div>
+
+          <!-- Toifasi -->
+          <div class="form-group">
+            <label for="txCategory" class="form-label">Toifasi / Manbasi</label>
+            <select id="txCategory" class="form-control" required>
+              <!-- Dinamik yuklanadi (Kirim yoki Chiqimga qarab) -->
+            </select>
+          </div>
+
+          <button type="submit" class="btn-submit-main btn-submit-expense" id="btnSubmitForm">
+            Xarajatni saqlash
+          </button>
+        </form>
+      </div>
+    </section>
+
+    <!-- ========================================================
+         3-SAHIFA: TAHLIL (KATEGORIYALAR TAHLILI)
+         ======================================================== -->
+    <section class="tab-content" id="tab-analytics">
+      <div class="card">
+        <h2 class="card-title">
+          <span>Xarajatlar tahlili</span>
+          <span class="card-count" id="analyticsMonthBadge">Sentabr</span>
+        </h2>
+        <div class="category-list" id="categoryBreakdownList">
+          <!-- JS orqali to'ldiriladi -->
+        </div>
+      </div>
+
+      <!-- Daromad manbalari -->
+      <div class="card">
+        <h2 class="card-title">
+          <span>Daromad manbalari</span>
+        </h2>
+        <div class="category-list" id="incomeSourcesList">
+          <!-- JS orqali to'ldiriladi -->
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================================
+         4-SAHIFA: TARIX (BARCHA YOZUVLAR)
+         ======================================================== -->
+    <section class="tab-content" id="tab-history">
+      <div class="card">
+        <div class="card-title">
+          <span>Amallar tarixi</span>
+          <span class="card-count" id="historyCounter">0 ta</span>
+        </div>
+
+        <!-- Qidiruv va toifa filtri -->
+        <div class="history-controls">
+          <input 
+            type="text" 
+            id="searchInput" 
+            class="search-input" 
+            placeholder="Nomi bo'yicha qidirish..."
+          >
+          <select id="filterType" class="filter-select">
+            <option value="all">Barcha amallar</option>
+            <option value="expense">Faqat xarajatlar</option>
+            <option value="income">Faqat daromadlar</option>
+          </select>
+        </div>
+
+        <label class="history-scope-toggle">
+          <input type="checkbox" id="checkOnlySelectedMonth" checked>
+          <span>Faqat tanlangan oy (<b id="filterScopeMonthText">Sentabr</b>) amallarini ko'rsatish</span>
+        </label>
+
+        <!-- Ro'yxat -->
+        <ul class="expenses-list" id="expensesList">
+          <!-- JS orqali to'ldiriladi -->
+        </ul>
+
+        <!-- Bo'sh holat -->
+        <div class="empty-state" id="emptyState" style="display: none;">
+          <div style="font-size: 28px; color: var(--text-light); margin-bottom: 6px;">—</div>
+          <strong>Bu oyda amallar mavjud emas</strong>
+          <p class="empty-state-text">Yangi xarajat yoki daromad kiritish uchun "Qo'shish" tugmasini bosing.</p>
+        </div>
+      </div>
+    </section>
+
+    <footer class="app-footer">
+      Oilaviy Byudjet &bull; Ota-onalar va butun oila uchun
+    </footer>
+  </div>
+
+  <!-- ========================================================
+       EKRAN PASTIDAGI MOBIL NAVIGATSIYA (BOTTOM NAV BAR)
+       ======================================================== -->
+  <nav class="bottom-nav">
+    <!-- Asosiy -->
+    <button type="button" class="nav-item active" data-tab="tab-overview">
+      <svg class="nav-icon" viewBox="0 0 24 24">
+        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+        <polyline points="9 22 9 12 15 12 15 22"></polyline>
+      </svg>
+      <span class="nav-label">Asosiy</span>
+    </button>
+
+    <!-- Qo'shish -->
+    <button type="button" class="nav-item add-action-item" data-tab="tab-add">
+      <div class="nav-icon-wrap">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <line x1="12" y1="5" x2="12" y2="19"></line>
+          <line x1="5" y1="12" x2="19" y2="12"></line>
+        </svg>
+      </div>
+      <span class="nav-label">Qo'shish</span>
+    </button>
+
+    <!-- Tahlil -->
+    <button type="button" class="nav-item" data-tab="tab-analytics">
+      <svg class="nav-icon" viewBox="0 0 24 24">
+        <line x1="18" y1="20" x2="18" y2="10"></line>
+        <line x1="12" y1="20" x2="12" y2="4"></line>
+        <line x1="6" y1="20" x2="6" y2="14"></line>
+      </svg>
+      <span class="nav-label">Tahlil</span>
+    </button>
+
+    <!-- Tarix -->
+    <button type="button" class="nav-item" data-tab="tab-history">
+      <svg class="nav-icon" viewBox="0 0 24 24">
+        <line x1="8" y1="6" x2="21" y2="6"></line>
+        <line x1="8" y1="12" x2="21" y2="12"></line>
+        <line x1="8" y1="18" x2="21" y2="18"></line>
+        <line x1="3" y1="6" x2="3.01" y2="6"></line>
+        <line x1="3" y1="12" x2="3.01" y2="12"></line>
+        <line x1="3" y1="18" x2="3.01" y2="18"></line>
+      </svg>
+      <span class="nav-label">Tarix</span>
+    </button>
+  </nav>
+
+  <!-- ========================================================
+       BYUDJETNI TAHRIRLASH MODALI
+       ======================================================== -->
+  <div class="modal-overlay" id="budgetModal" style="display: none;">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 class="modal-title">Oylik xarajat limitini belgilash</h3>
+        <button type="button" class="btn-close-modal" id="btnCloseBudgetModal">✕</button>
+      </div>
+      <form id="budgetForm">
+        <div class="form-group">
+          <label for="budgetInput" class="form-label">Oylik maksimal limit (so'mda)</label>
+          <input 
+            type="number" 
+            id="budgetInput" 
+            class="form-control" 
+            placeholder="Masalan: 5000000" 
+            min="0" 
+            step="any" 
+            required
+          >
+          <small style="display:block; margin-top:6px; color:var(--text-muted); font-size:12px;">
+            Har oy sarflash rejalashtirilgan eng yuqori chegarani belgilang.
+          </small>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn-cancel" id="btnCancelBudgetModal">Bekor qilish</button>
+          <button type="submit" class="btn-submit-main btn-submit-expense" style="margin-top: 0; width: auto; padding: 0 20px; height: 42px;">
+            Saqlash
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

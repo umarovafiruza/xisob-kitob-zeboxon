@@ -1,0 +1,2165 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Oilaviy Byudjet | Kirim va Chiqimlar Nazorati</title>
+  <style>
+    /* ========================================================
+       OILAVIY EXPENSE TRACKER - MOBIL ILOVA (APP) USLUBIDA
+       Kirim/Chiqim va Oylik Arxiv bilan kengaytirilgan
+       ======================================================== */
+    :root {
+      --bg-body: #f8fafc;
+      --bg-card: #ffffff;
+      --bg-subtle: #f1f5f9;
+      --border: #e2e8f0;
+      --border-focus: #2563eb;
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --text-light: #94a3b8;
+      
+      --primary: #0f172a;
+      --primary-hover: #1e293b;
+      --accent: #2563eb;
+      --accent-light: #eff6ff;
+
+      --income-green: #059669;
+      --income-bg: #ecfdf5;
+      --income-border: #a7f3d0;
+
+      --expense-red: #dc2626;
+      --expense-bg: #fef2f2;
+      --expense-border: #fecaca;
+
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 16px;
+      --radius-full: 9999px;
+
+      --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05);
+      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.06), 0 2px 4px -2px rgba(0, 0, 0, 0.04);
+      --shadow-bottom-nav: 0 -4px 16px rgba(0, 0, 0, 0.06);
+
+      --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      --safe-bottom: env(safe-area-inset-bottom, 0px);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      font-family: var(--font-family);
+      background-color: var(--bg-body);
+      color: var(--text-main);
+      line-height: 1.5;
+      padding: 14px 12px calc(76px + var(--safe-bottom));
+      -webkit-font-smoothing: antialiased;
+    }
+
+    @media (min-width: 768px) {
+      body {
+        padding: 24px 20px 48px;
+      }
+    }
+
+    .container {
+      max-width: 680px;
+      margin: 0 auto;
+    }
+
+    @media (min-width: 1040px) {
+      .container {
+        max-width: 820px;
+      }
+    }
+
+    /* SHAPKA (HEADER) */
+    .app-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 14px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border);
+      gap: 10px;
+    }
+
+    .brand-title {
+      font-size: 20px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      color: var(--text-main);
+    }
+
+    .brand-subtitle {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-clear-ghost {
+      font-size: 12px;
+      background: transparent;
+      color: var(--text-muted);
+      border: 1px solid var(--border);
+      padding: 5px 10px;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-clear-ghost:hover {
+      background: var(--expense-bg);
+      color: var(--expense-red);
+      border-color: transparent;
+    }
+
+    /* OYLIK NAVIGATOR (OYMA-OY TANLASH CHIZIG'I) */
+    .month-nav-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 6px 10px;
+      margin-bottom: 16px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .btn-month-nav {
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--bg-subtle);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      color: var(--text-main);
+      font-size: 16px;
+      font-weight: 700;
+      transition: all 0.15s;
+    }
+
+    .btn-month-nav:active {
+      background: #e2e8f0;
+      transform: scale(0.95);
+    }
+
+    .month-label-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1px;
+    }
+
+    .current-month-text {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .btn-today-shortcut {
+      font-size: 11px;
+      color: var(--accent);
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      font-weight: 600;
+      text-decoration: underline;
+    }
+
+    /* DESKTOP TABS */
+    .desktop-tabs {
+      display: none;
+      background: var(--bg-subtle);
+      padding: 4px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border);
+      margin-bottom: 20px;
+    }
+
+    @media (min-width: 768px) {
+      .desktop-tabs {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 4px;
+      }
+    }
+
+    .desktop-tab-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 10px 14px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-muted);
+      background: transparent;
+      border: none;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .desktop-tab-btn svg {
+      width: 17px;
+      height: 17px;
+    }
+
+    .desktop-tab-btn:hover {
+      color: var(--text-main);
+      background: rgba(255, 255, 255, 0.6);
+    }
+
+    .desktop-tab-btn.active {
+      color: var(--text-main);
+      background: #ffffff;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+    }
+
+    /* SAHIFALAR */
+    .tab-content {
+      display: none;
+      animation: tabFadeIn 0.2s ease-out;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    @keyframes tabFadeIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* UMUMIY KARTOCHKALAR */
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 18px 20px;
+      margin-bottom: 16px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .card-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--text-main);
+      margin-bottom: 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .card-count {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-muted);
+      background: var(--bg-subtle);
+      padding: 3px 8px;
+      border-radius: 12px;
+    }
+
+    /* 1-TAB: ASOSIY PANEL */
+    .balance-hero-card {
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+      color: #ffffff;
+      border-radius: var(--radius-lg);
+      padding: 22px 20px;
+      margin-bottom: 16px;
+      box-shadow: var(--shadow-md);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .balance-label {
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #94a3b8;
+      margin-bottom: 6px;
+    }
+
+    .balance-amount {
+      font-size: 32px;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      line-height: 1.1;
+      word-break: break-word;
+      color: #ffffff;
+    }
+
+    .balance-amount.is-negative {
+      color: #f87171;
+    }
+
+    .balance-flow-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 16px;
+      padding-top: 14px;
+      border-top: 1px solid rgba(255, 255, 255, 0.12);
+    }
+
+    .flow-box {
+      background: rgba(255, 255, 255, 0.06);
+      border-radius: var(--radius-sm);
+      padding: 10px 12px;
+    }
+
+    .flow-title {
+      font-size: 11px;
+      font-weight: 600;
+      color: #cbd5e1;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .flow-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+    }
+
+    .flow-dot.green { background: #34d399; }
+    .flow-dot.red { background: #f87171; }
+
+    .flow-val {
+      font-size: 17px;
+      font-weight: 700;
+      margin-top: 4px;
+      white-space: nowrap;
+    }
+
+    .flow-val.income-text { color: #34d399; }
+    .flow-val.expense-text { color: #fca5a5; }
+
+    /* Oylik Byudjet Kartasi */
+    .budget-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 18px 20px;
+      margin-bottom: 16px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .budget-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .budget-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .btn-edit-budget {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-main);
+      background: var(--bg-subtle);
+      border: 1px solid var(--border);
+      padding: 4px 10px;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .budget-progress-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .budget-progress-bar {
+      width: 100%;
+      height: 8px;
+      background: #e2e8f0;
+      border-radius: 99px;
+      overflow: hidden;
+    }
+
+    .budget-progress-fill {
+      height: 100%;
+      border-radius: 99px;
+      background: #2563eb;
+      transition: width 0.4s ease, background-color 0.3s;
+    }
+
+    .budget-progress-fill.fill-safe { background-color: #10b981; }
+    .budget-progress-fill.fill-warning { background-color: #f59e0b; }
+    .budget-progress-fill.fill-danger { background-color: #ef4444; }
+
+    .budget-progress-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    /* Telegram Hisobot Ulashish */
+    .share-action-card {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 14px 16px;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .share-text {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-main);
+    }
+
+    .btn-copy-report {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      font-weight: 700;
+      background: #eff6ff;
+      color: #1d4ed8;
+      border: 1px solid #bfdbfe;
+      padding: 8px 12px;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: all 0.15s;
+      white-space: nowrap;
+    }
+
+    .btn-copy-report:active {
+      transform: scale(0.96);
+      background: #dbeafe;
+    }
+
+    /* Tezkor tugmalar */
+    .quick-action-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .btn-action-tile {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      height: 44px;
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      font-weight: 700;
+      border: 1px solid transparent;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .btn-action-tile:active {
+      transform: scale(0.98);
+    }
+
+    .btn-action-tile.action-expense {
+      background: var(--expense-bg);
+      color: var(--expense-red);
+      border-color: var(--expense-border);
+    }
+
+    .btn-action-tile.action-income {
+      background: var(--income-bg);
+      color: var(--income-green);
+      border-color: var(--income-border);
+    }
+
+    /* 2-TAB: QO'SHISH FORMASI */
+    .type-toggle-wrap {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      background: var(--bg-subtle);
+      padding: 4px;
+      border-radius: var(--radius-md);
+      margin-bottom: 18px;
+      border: 1px solid var(--border);
+    }
+
+    .btn-type-toggle {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      height: 40px;
+      font-size: 14px;
+      font-weight: 700;
+      border-radius: var(--radius-sm);
+      border: none;
+      background: transparent;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-type-toggle.active-expense {
+      background: #ffffff;
+      color: var(--expense-red);
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+    }
+
+    .btn-type-toggle.active-income {
+      background: #ffffff;
+      color: var(--income-green);
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    .form-label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-main);
+      margin-bottom: 6px;
+    }
+
+    .form-control {
+      width: 100%;
+      height: 46px;
+      padding: 0 14px;
+      font-size: 15px;
+      font-family: inherit;
+      color: var(--text-main);
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      outline: none;
+      transition: all 0.2s;
+    }
+
+    .form-control:focus {
+      border-color: var(--border-focus);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+    }
+
+    @media (min-width: 480px) {
+      .form-row {
+        grid-template-columns: 1.2fr 1fr;
+      }
+    }
+
+    .btn-submit-main {
+      width: 100%;
+      height: 48px;
+      border: none;
+      border-radius: var(--radius-sm);
+      font-size: 15px;
+      font-weight: 700;
+      color: #ffffff;
+      cursor: pointer;
+      transition: background-color 0.2s, transform 0.1s;
+      margin-top: 8px;
+    }
+
+    .btn-submit-main.btn-submit-expense {
+      background: var(--primary);
+    }
+
+    .btn-submit-main.btn-submit-income {
+      background: var(--income-green);
+    }
+
+    .btn-submit-main:active {
+      transform: scale(0.98);
+    }
+
+    .toast-msg {
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 12px 16px;
+      border-radius: var(--radius-md);
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 16px;
+      animation: fadeIn 0.2s;
+    }
+
+    .toast-msg.toast-success {
+      background: #ecfdf5;
+      border: 1px solid #a7f3d0;
+      color: #065f46;
+    }
+
+    /* 3-TAB: TAHLIL */
+    .category-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .category-item {
+      padding: 12px 14px;
+      background: var(--bg-subtle);
+      border-radius: var(--radius-md);
+    }
+
+    .category-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 6px;
+    }
+
+    .category-name-wrap {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .category-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+    }
+
+    .category-name {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-main);
+    }
+
+    .category-sum {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .category-meta {
+      display: flex;
+      justify-content: space-between;
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    .progress-bar-bg {
+      width: 100%;
+      height: 6px;
+      background: #e2e8f0;
+      border-radius: 99px;
+      overflow: hidden;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      border-radius: 99px;
+      transition: width 0.4s ease;
+    }
+
+    .color-ro-zg-or { background-color: #059669; }
+    .color-dorixona { background-color: #e11d48; }
+    .color-ta-lim { background-color: #2563eb; }
+    .color-transport { background-color: #d97706; }
+    .color-kommunal { background-color: #0891b2; }
+    .color-ehson { background-color: #7c3aed; }
+    .color-kredit { background-color: #dc2626; }
+    .color-boshqa { background-color: #64748b; }
+
+    .badge-ro-zg-or { background: #ecfdf5; color: #047857; }
+    .badge-dorixona { background: #ffe4e6; color: #be123c; }
+    .badge-ta-lim { background: #eff6ff; color: #1d4ed8; }
+    .badge-transport { background: #fef3c7; color: #b45309; }
+    .badge-kommunal { background: #ecfeff; color: #0e7490; }
+    .badge-ehson { background: #f5f3ff; color: #6d28d9; }
+    .badge-kredit { background: #fef2f2; color: #b91c1c; }
+    .badge-boshqa { background: #f1f5f9; color: #475569; }
+
+    .badge-income { background: #ecfdf5; color: #047857; border: 1px solid #a7f3d0; }
+
+    /* 4-TAB: TARIX */
+    .history-controls {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    @media (min-width: 480px) {
+      .history-controls {
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+      }
+    }
+
+    .search-input {
+      flex: 1;
+      height: 40px;
+      padding: 0 12px;
+      font-size: 13px;
+      font-family: inherit;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      outline: none;
+      background: #ffffff;
+    }
+
+    .filter-select {
+      height: 40px;
+      padding: 0 10px;
+      font-size: 13px;
+      font-family: inherit;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      outline: none;
+      background: #ffffff;
+      color: var(--text-main);
+      cursor: pointer;
+    }
+
+    .history-scope-toggle {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-bottom: 12px;
+      cursor: pointer;
+    }
+
+    .expenses-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .expense-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 14px;
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      transition: border-color 0.2s;
+    }
+
+    .expense-item.is-income-item {
+      border-left: 3px solid var(--income-green);
+    }
+
+    .expense-item.is-expense-item {
+      border-left: 3px solid #cbd5e1;
+    }
+
+    .expense-left {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      min-width: 0;
+    }
+
+    .expense-name-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .expense-name {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-main);
+      word-break: break-word;
+    }
+
+    .expense-badge {
+      display: inline-block;
+      font-size: 10px;
+      font-weight: 600;
+      padding: 2px 6px;
+      border-radius: 4px;
+      line-height: 1.3;
+    }
+
+    .expense-date {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .expense-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-left: 10px;
+      flex-shrink: 0;
+    }
+
+    .expense-amount {
+      font-size: 14px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .expense-amount.text-income {
+      color: var(--income-green);
+    }
+
+    .expense-amount.text-expense {
+      color: var(--text-main);
+    }
+
+    .btn-delete {
+      width: 28px;
+      height: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: transparent;
+      color: var(--text-light);
+      border: 1px solid transparent;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 700;
+      transition: all 0.2s;
+    }
+
+    .btn-delete:hover {
+      background: var(--expense-bg);
+      color: var(--expense-red);
+      border-color: #fecaca;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 40px 16px;
+      color: var(--text-muted);
+    }
+
+    .empty-state-text {
+      font-size: 13px;
+      margin-top: 6px;
+    }
+
+    /* BOTTOM NAV BAR */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: calc(62px + var(--safe-bottom));
+      padding-bottom: var(--safe-bottom);
+      background: rgba(255, 255, 255, 0.94);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      z-index: 800;
+      box-shadow: var(--shadow-bottom-nav);
+    }
+
+    @media (min-width: 768px) {
+      .bottom-nav { display: none; }
+    }
+
+    .nav-item {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      padding: 6px 0;
+      gap: 3px;
+      transition: color 0.15s ease, transform 0.1s;
+    }
+
+    .nav-item:active { transform: scale(0.94); }
+
+    .nav-icon {
+      width: 20px;
+      height: 20px;
+      stroke-width: 2;
+      stroke: currentColor;
+      fill: none;
+      transition: stroke 0.2s, transform 0.2s;
+    }
+
+    .nav-label {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+    }
+
+    .nav-item.active { color: var(--accent); }
+    .nav-item.active .nav-icon {
+      stroke: var(--accent);
+      transform: translateY(-1px);
+    }
+
+    .nav-item.add-action-item .nav-icon-wrap {
+      width: 32px;
+      height: 32px;
+      background: var(--primary);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #ffffff;
+      box-shadow: 0 2px 6px rgba(15, 23, 42, 0.25);
+      transition: transform 0.15s, background-color 0.2s;
+    }
+
+    .nav-item.add-action-item .nav-icon-wrap svg {
+      width: 18px;
+      height: 18px;
+      stroke: #ffffff;
+    }
+
+    .nav-item.add-action-item.active .nav-icon-wrap {
+      background: var(--accent);
+    }
+
+    /* MODAL */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.45);
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      z-index: 1000;
+      animation: fadeIn 0.15s ease-out;
+    }
+
+    .modal-card {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 22px;
+      width: 100%;
+      max-width: 400px;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .modal-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .btn-close-modal {
+      background: transparent;
+      border: none;
+      font-size: 18px;
+      color: var(--text-muted);
+      cursor: pointer;
+      padding: 4px 8px;
+      border-radius: 6px;
+    }
+
+    .btn-close-modal:hover {
+      color: var(--text-main);
+      background: var(--bg-subtle);
+    }
+
+    .modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    .btn-cancel {
+      height: 42px;
+      padding: 0 16px;
+      background: transparent;
+      color: var(--text-muted);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-cancel:hover {
+      background: var(--bg-subtle);
+      color: var(--text-main);
+    }
+
+    .app-footer {
+      text-align: center;
+      margin-top: 24px;
+      font-size: 11px;
+      color: var(--text-light);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <!-- SHAPKA -->
+    <header class="app-header">
+      <div>
+        <h1 class="brand-title">Oilaviy Byudjet</h1>
+        <p class="brand-subtitle">Kirim va Chiqimlar nazorati</p>
+      </div>
+      <div class="header-right">
+        <button type="button" class="btn-clear-ghost" id="btnClearAll" title="Barcha ma'lumotlarni tozalash">
+          Tozalash
+        </button>
+      </div>
+    </header>
+
+    <!-- OYMA-OY NAVIGATSIYA CHIZIG'I -->
+    <section class="month-nav-bar">
+      <button type="button" class="btn-month-nav" id="btnPrevMonth" title="O'tgan oy">◀</button>
+      <div class="month-label-wrap">
+        <span class="current-month-text" id="currentMonthLabel">Sentabr, 2026</span>
+        <button type="button" class="btn-today-shortcut" id="btnTodayShortcut" style="display: none;">
+          Joriy oyga qaytish
+        </button>
+      </div>
+      <button type="button" class="btn-month-nav" id="btnNextMonth" title="Keyingi oy">▶</button>
+    </section>
+
+    <!-- KOMPYUTER UCHUN YUQORI TABLAR -->
+    <nav class="desktop-tabs">
+      <button type="button" class="desktop-tab-btn active" data-tab="tab-overview">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+          <polyline points="9 22 9 12 15 12 15 22"></polyline>
+        </svg>
+        <span>Asosiy</span>
+      </button>
+      <button type="button" class="desktop-tab-btn" data-tab="tab-add">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="12" y1="5" x2="12" y2="19"></line>
+          <line x1="5" y1="12" x2="19" y2="12"></line>
+        </svg>
+        <span>Qo'shish</span>
+      </button>
+      <button type="button" class="desktop-tab-btn" data-tab="tab-analytics">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="18" y1="20" x2="18" y2="10"></line>
+          <line x1="12" y1="20" x2="12" y2="4"></line>
+          <line x1="6" y1="20" x2="6" y2="14"></line>
+        </svg>
+        <span>Tahlil</span>
+      </button>
+      <button type="button" class="desktop-tab-btn" data-tab="tab-history">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="8" y1="6" x2="21" y2="6"></line>
+          <line x1="8" y1="12" x2="21" y2="12"></line>
+          <line x1="8" y1="18" x2="21" y2="18"></line>
+          <line x1="3" y1="6" x2="3.01" y2="6"></line>
+          <line x1="3" y1="12" x2="3.01" y2="12"></line>
+          <line x1="3" y1="18" x2="3.01" y2="18"></line>
+        </svg>
+        <span>Tarix</span>
+      </button>
+    </nav>
+
+    <!-- 1-SAHIFA: ASOSIY PANEL -->
+    <section class="tab-content active" id="tab-overview">
+      <div class="balance-hero-card">
+        <div class="balance-label">Hamyonda qolgan sof mablag'</div>
+        <div class="balance-amount" id="netBalanceDisplay">0 so'm</div>
+
+        <div class="balance-flow-row">
+          <div class="flow-box">
+            <span class="flow-title">
+              <span class="flow-dot green"></span>
+              Kirim (Daromad)
+            </span>
+            <div class="flow-val income-text" id="monthIncomeDisplay">+ 0 so'm</div>
+          </div>
+          <div class="flow-box">
+            <span class="flow-title">
+              <span class="flow-dot red"></span>
+              Chiqim (Xarajat)
+            </span>
+            <div class="flow-val expense-text" id="monthExpenseDisplay">- 0 so'm</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="quick-action-grid">
+        <button type="button" class="btn-action-tile action-expense" id="btnQuickAddExpense">
+          <span>− Xarajat kiritish</span>
+        </button>
+        <button type="button" class="btn-action-tile action-income" id="btnQuickAddIncome">
+          <span>+ Daromad kiritish</span>
+        </button>
+      </div>
+
+      <div class="budget-card">
+        <div class="budget-header">
+          <span class="budget-title">Oylik Reja Chegarasi</span>
+          <button type="button" class="btn-edit-budget" id="btnOpenBudgetModal">
+            O'zgartirish
+          </button>
+        </div>
+
+        <div class="budget-progress-wrap">
+          <div class="budget-progress-bar">
+            <div class="budget-progress-fill fill-safe" id="budgetProgressFill" style="width: 0%;"></div>
+          </div>
+          <div class="budget-progress-footer">
+            <span id="budgetPercentText">0% ishlatildi</span>
+            <span id="budgetPlanSubtext">Limit: 0 so'm</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="share-action-card">
+        <div>
+          <div class="share-text">Oylik hisobotni ulashish</div>
+          <div style="font-size: 11px; color: var(--text-muted); margin-top: 2px;">
+            Oilaviy Telegram guruhga tayyor xabar
+          </div>
+        </div>
+        <button type="button" class="btn-copy-report" id="btnCopyReport">
+          <span>📋 Nusxalash</span>
+        </button>
+      </div>
+
+      <div class="card">
+        <div class="card-title">
+          <span>So'nggi amallar</span>
+          <button type="button" style="background: none; border: none; color: var(--accent); font-size: 13px; font-weight: 600; cursor: pointer;" id="btnGoToHistory">
+            Barchasi ➔
+          </button>
+        </div>
+        <ul class="expenses-list" id="recentTransactionsList"></ul>
+      </div>
+    </section>
+
+    <!-- 2-SAHIFA: QO'SHISH -->
+    <section class="tab-content" id="tab-add">
+      <div class="card">
+        <h2 class="card-title" id="formHeaderTitle">Yangi amal kiritish</h2>
+
+        <div class="type-toggle-wrap">
+          <button type="button" class="btn-type-toggle active-expense" id="btnToggleExpense">
+            <span>🔴 Chiqim (Xarajat)</span>
+          </button>
+          <button type="button" class="btn-type-toggle" id="btnToggleIncome">
+            <span>🟢 Kirim (Daromad)</span>
+          </button>
+        </div>
+
+        <div class="toast-msg toast-success" id="addSuccessToast">
+          <span id="toastText">✓ Amal muvaffaqiyatli saqlandi!</span>
+        </div>
+
+        <form id="transactionForm">
+          <div class="form-group">
+            <label for="txTitle" class="form-label" id="labelTxTitle">Xarajat nomi</label>
+            <input 
+              type="text" 
+              id="txTitle" 
+              class="form-control" 
+              placeholder="Masalan: Bozorlik, Go'sht, Dorixona..." 
+              required 
+              autocomplete="off"
+            >
+          </div>
+
+          <div class="form-row form-group">
+            <div>
+              <label for="txAmount" class="form-label">Miqdori (so'mda)</label>
+              <input 
+                type="number" 
+                id="txAmount" 
+                class="form-control" 
+                placeholder="Masalan: 350000" 
+                min="1" 
+                step="any" 
+                required
+              >
+            </div>
+            <div>
+              <label for="txDate" class="form-label">Sana</label>
+              <input 
+                type="date" 
+                id="txDate" 
+                class="form-control" 
+                required
+              >
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="txCategory" class="form-label">Toifasi / Manbasi</label>
+            <select id="txCategory" class="form-control" required></select>
+          </div>
+
+          <button type="submit" class="btn-submit-main btn-submit-expense" id="btnSubmitForm">
+            Xarajatni saqlash
+          </button>
+        </form>
+      </div>
+    </section>
+
+    <!-- 3-SAHIFA: TAHLIL -->
+    <section class="tab-content" id="tab-analytics">
+      <div class="card">
+        <h2 class="card-title">
+          <span>Xarajatlar tahlili</span>
+          <span class="card-count" id="analyticsMonthBadge">Sentabr</span>
+        </h2>
+        <div class="category-list" id="categoryBreakdownList"></div>
+      </div>
+
+      <div class="card">
+        <h2 class="card-title">
+          <span>Daromad manbalari</span>
+        </h2>
+        <div class="category-list" id="incomeSourcesList"></div>
+      </div>
+    </section>
+
+    <!-- 4-SAHIFA: TARIX -->
+    <section class="tab-content" id="tab-history">
+      <div class="card">
+        <div class="card-title">
+          <span>Amallar tarixi</span>
+          <span class="card-count" id="historyCounter">0 ta</span>
+        </div>
+
+        <div class="history-controls">
+          <input 
+            type="text" 
+            id="searchInput" 
+            class="search-input" 
+            placeholder="Nomi bo'yicha qidirish..."
+          >
+          <select id="filterType" class="filter-select">
+            <option value="all">Barcha amallar</option>
+            <option value="expense">Faqat xarajatlar</option>
+            <option value="income">Faqat daromadlar</option>
+          </select>
+        </div>
+
+        <label class="history-scope-toggle">
+          <input type="checkbox" id="checkOnlySelectedMonth" checked>
+          <span>Faqat tanlangan oy (<b id="filterScopeMonthText">Sentabr</b>) amallarini ko'rsatish</span>
+        </label>
+
+        <ul class="expenses-list" id="expensesList"></ul>
+
+        <div class="empty-state" id="emptyState" style="display: none;">
+          <div style="font-size: 28px; color: var(--text-light); margin-bottom: 6px;">—</div>
+          <strong>Bu oyda amallar mavjud emas</strong>
+          <p class="empty-state-text">Yangi xarajat yoki daromad kiritish uchun "Qo'shish" tugmasini bosing.</p>
+        </div>
+      </div>
+    </section>
+
+    <footer class="app-footer">
+      Oilaviy Byudjet &bull; Ota-onalar va butun oila uchun
+    </footer>
+  </div>
+
+  <!-- BOTTOM NAV BAR -->
+  <nav class="bottom-nav">
+    <button type="button" class="nav-item active" data-tab="tab-overview">
+      <svg class="nav-icon" viewBox="0 0 24 24">
+        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+        <polyline points="9 22 9 12 15 12 15 22"></polyline>
+      </svg>
+      <span class="nav-label">Asosiy</span>
+    </button>
+
+    <button type="button" class="nav-item add-action-item" data-tab="tab-add">
+      <div class="nav-icon-wrap">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <line x1="12" y1="5" x2="12" y2="19"></line>
+          <line x1="5" y1="12" x2="19" y2="12"></line>
+        </svg>
+      </div>
+      <span class="nav-label">Qo'shish</span>
+    </button>
+
+    <button type="button" class="nav-item" data-tab="tab-analytics">
+      <svg class="nav-icon" viewBox="0 0 24 24">
+        <line x1="18" y1="20" x2="18" y2="10"></line>
+        <line x1="12" y1="20" x2="12" y2="4"></line>
+        <line x1="6" y1="20" x2="6" y2="14"></line>
+      </svg>
+      <span class="nav-label">Tahlil</span>
+    </button>
+
+    <button type="button" class="nav-item" data-tab="tab-history">
+      <svg class="nav-icon" viewBox="0 0 24 24">
+        <line x1="8" y1="6" x2="21" y2="6"></line>
+        <line x1="8" y1="12" x2="21" y2="12"></line>
+        <line x1="8" y1="18" x2="21" y2="18"></line>
+        <line x1="3" y1="6" x2="3.01" y2="6"></line>
+        <line x1="3" y1="12" x2="3.01" y2="12"></line>
+        <line x1="3" y1="18" x2="3.01" y2="18"></line>
+      </svg>
+      <span class="nav-label">Tarix</span>
+    </button>
+  </nav>
+
+  <!-- MODAL -->
+  <div class="modal-overlay" id="budgetModal" style="display: none;">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 class="modal-title">Oylik xarajat limitini belgilash</h3>
+        <button type="button" class="btn-close-modal" id="btnCloseBudgetModal">✕</button>
+      </div>
+      <form id="budgetForm">
+        <div class="form-group">
+          <label for="budgetInput" class="form-label">Oylik maksimal limit (so'mda)</label>
+          <input 
+            type="number" 
+            id="budgetInput" 
+            class="form-control" 
+            placeholder="Masalan: 5000000" 
+            min="0" 
+            step="any" 
+            required
+          >
+          <small style="display:block; margin-top:6px; color:var(--text-muted); font-size:12px;">
+            Har oy sarflash rejalashtirilgan eng yuqori chegarani belgilang.
+          </small>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn-cancel" id="btnCancelBudgetModal">Bekor qilish</button>
+          <button type="submit" class="btn-submit-main btn-submit-expense" style="margin-top: 0; width: auto; padding: 0 20px; height: 42px;">
+            Saqlash
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- JAVASCRIPT -->
+  <script>
+    (function () {
+      'use strict';
+
+      const STORAGE_KEY = 'oilaviy_tracker_expenses_v1';
+      const BUDGET_KEY = 'oilaviy_tracker_budget_v1';
+
+      const MONTH_NAMES = [
+        "Yanvar", "Fevral", "Mart", "Aprel", "May", "Iyun",
+        "Iyul", "Avgust", "Sentabr", "Oktabr", "Noyabr", "Dekabr"
+      ];
+
+      const CATEGORIES_EXPENSE = [
+        { name: "Ro'zg'or / Oziq-ovqat", key: "ro-zg-or" },
+        { name: "Dorixona / Salomatlik", key: "dorixona" },
+        { name: "Kommunal to'lovlar", key: "kommunal" },
+        { name: "Transport / Yo'l", key: "transport" },
+        { name: "Ta'lim / Kurslar", key: "ta-lim" },
+        { name: "Ehson / To'y-marosim", key: "ehson" },
+        { name: "Kredit / Qarz", key: "kredit" },
+        { name: "Boshqa xarajatlar", key: "boshqa" }
+      ];
+
+      const CATEGORIES_INCOME = [
+        { name: "Oylik maosh", key: "income" },
+        { name: "Pensiya", key: "income" },
+        { name: "Biznes / Savdo", key: "income" },
+        { name: "Qo'shimcha daromad", key: "income" },
+        { name: "Sovg'a / Yordam", key: "income" },
+        { name: "Boshqa tushum", key: "income" }
+      ];
+
+      const DEFAULT_SAMPLE_DATA = [
+        {
+          id: 'tx_1',
+          type: 'income',
+          title: "Oylik maosh",
+          amount: 6000000,
+          category: "Oylik maosh",
+          date: getTodayDateString()
+        },
+        {
+          id: 'tx_2',
+          type: 'expense',
+          title: "Bozorlik (Go'sht, un, mevalar)",
+          amount: 850000,
+          category: "Ro'zg'or / Oziq-ovqat",
+          date: getTodayDateString()
+        },
+        {
+          id: 'tx_3',
+          type: 'expense',
+          title: "Dorixona (Dori va vitaminlar)",
+          amount: 180000,
+          category: "Dorixona / Salomatlik",
+          date: getTodayDateString()
+        },
+        {
+          id: 'tx_4',
+          type: 'expense',
+          title: "Kommunal to'lovlar",
+          amount: 320000,
+          category: "Kommunal to'lovlar",
+          date: getTodayDateString()
+        }
+      ];
+
+      const btnPrevMonth = document.getElementById('btnPrevMonth');
+      const btnNextMonth = document.getElementById('btnNextMonth');
+      const currentMonthLabel = document.getElementById('currentMonthLabel');
+      const btnTodayShortcut = document.getElementById('btnTodayShortcut');
+
+      const tabButtons = document.querySelectorAll('[data-tab]');
+      const tabContents = document.querySelectorAll('.tab-content');
+      const btnGoToHistory = document.getElementById('btnGoToHistory');
+      const btnQuickAddExpense = document.getElementById('btnQuickAddExpense');
+      const btnQuickAddIncome = document.getElementById('btnQuickAddIncome');
+      const btnCopyReport = document.getElementById('btnCopyReport');
+
+      const netBalanceDisplay = document.getElementById('netBalanceDisplay');
+      const monthIncomeDisplay = document.getElementById('monthIncomeDisplay');
+      const monthExpenseDisplay = document.getElementById('monthExpenseDisplay');
+      const budgetProgressFill = document.getElementById('budgetProgressFill');
+      const budgetPercentText = document.getElementById('budgetPercentText');
+      const budgetPlanSubtext = document.getElementById('budgetPlanSubtext');
+
+      const btnOpenBudgetModal = document.getElementById('btnOpenBudgetModal');
+      const budgetModal = document.getElementById('budgetModal');
+      const btnCloseBudgetModal = document.getElementById('btnCloseBudgetModal');
+      const btnCancelBudgetModal = document.getElementById('btnCancelBudgetModal');
+      const budgetForm = document.getElementById('budgetForm');
+      const budgetInput = document.getElementById('budgetInput');
+
+      const formHeaderTitle = document.getElementById('formHeaderTitle');
+      const btnToggleExpense = document.getElementById('btnToggleExpense');
+      const btnToggleIncome = document.getElementById('btnToggleIncome');
+      const transactionForm = document.getElementById('transactionForm');
+      const labelTxTitle = document.getElementById('labelTxTitle');
+      const txTitle = document.getElementById('txTitle');
+      const txAmount = document.getElementById('txAmount');
+      const txDate = document.getElementById('txDate');
+      const txCategory = document.getElementById('txCategory');
+      const btnSubmitForm = document.getElementById('btnSubmitForm');
+      const addSuccessToast = document.getElementById('addSuccessToast');
+      const toastText = document.getElementById('toastText');
+
+      const recentTransactionsList = document.getElementById('recentTransactionsList');
+      const categoryBreakdownList = document.getElementById('categoryBreakdownList');
+      const incomeSourcesList = document.getElementById('incomeSourcesList');
+      const analyticsMonthBadge = document.getElementById('analyticsMonthBadge');
+
+      const expensesList = document.getElementById('expensesList');
+      const historyCounter = document.getElementById('historyCounter');
+      const searchInput = document.getElementById('searchInput');
+      const filterType = document.getElementById('filterType');
+      const checkOnlySelectedMonth = document.getElementById('checkOnlySelectedMonth');
+      const filterScopeMonthText = document.getElementById('filterScopeMonthText');
+      const emptyState = document.getElementById('emptyState');
+      const btnClearAll = document.getElementById('btnClearAll');
+
+      let transactions = loadTransactions();
+      let monthlyBudget = loadBudget();
+      let formMode = 'expense';
+      let toastTimer = null;
+
+      const today = new Date();
+      let activeYear = today.getFullYear();
+      let activeMonth = today.getMonth();
+
+      init();
+
+      function init() {
+        updateMonthDisplay();
+        setFormMode('expense');
+        if (txDate) txDate.value = getTodayDateString();
+
+        btnPrevMonth.addEventListener('click', () => changeMonth(-1));
+        btnNextMonth.addEventListener('click', () => changeMonth(1));
+        btnTodayShortcut.addEventListener('click', resetToTodayMonth);
+
+        tabButtons.forEach(btn => {
+          btn.addEventListener('click', () => switchTab(btn.getAttribute('data-tab')));
+        });
+
+        if (btnGoToHistory) {
+          btnGoToHistory.addEventListener('click', () => switchTab('tab-history'));
+        }
+
+        if (btnQuickAddExpense) {
+          btnQuickAddExpense.addEventListener('click', () => {
+            setFormMode('expense');
+            switchTab('tab-add');
+          });
+        }
+
+        if (btnQuickAddIncome) {
+          btnQuickAddIncome.addEventListener('click', () => {
+            setFormMode('income');
+            switchTab('tab-add');
+          });
+        }
+
+        btnToggleExpense.addEventListener('click', () => setFormMode('expense'));
+        btnToggleIncome.addEventListener('click', () => setFormMode('income'));
+
+        transactionForm.addEventListener('submit', handleAddTransaction);
+
+        expensesList.addEventListener('click', handleDeleteTransaction);
+        recentTransactionsList.addEventListener('click', handleDeleteTransaction);
+        searchInput.addEventListener('input', renderHistory);
+        filterType.addEventListener('change', renderHistory);
+        checkOnlySelectedMonth.addEventListener('change', renderHistory);
+        btnClearAll.addEventListener('click', handleClearAll);
+
+        btnCopyReport.addEventListener('click', handleCopyTelegramReport);
+
+        btnOpenBudgetModal.addEventListener('click', openBudgetModal);
+        btnCloseBudgetModal.addEventListener('click', closeBudgetModal);
+        btnCancelBudgetModal.addEventListener('click', closeBudgetModal);
+        budgetModal.addEventListener('click', (e) => {
+          if (e.target === budgetModal) closeBudgetModal();
+        });
+        document.addEventListener('keydown', (e) => {
+          if (e.key === 'Escape' && budgetModal.style.display === 'flex') {
+            closeBudgetModal();
+          }
+        });
+        budgetForm.addEventListener('submit', handleSaveBudget);
+
+        renderAll();
+      }
+
+      function changeMonth(delta) {
+        activeMonth += delta;
+        if (activeMonth < 0) {
+          activeMonth = 11;
+          activeYear -= 1;
+        } else if (activeMonth > 11) {
+          activeMonth = 0;
+          activeYear += 1;
+        }
+        updateMonthDisplay();
+        renderAll();
+      }
+
+      function resetToTodayMonth() {
+        const now = new Date();
+        activeYear = now.getFullYear();
+        activeMonth = now.getMonth();
+        updateMonthDisplay();
+        renderAll();
+      }
+
+      function updateMonthDisplay() {
+        const monthName = MONTH_NAMES[activeMonth];
+        currentMonthLabel.textContent = `${monthName}, ${activeYear}`;
+        if (analyticsMonthBadge) analyticsMonthBadge.textContent = monthName;
+        if (filterScopeMonthText) filterScopeMonthText.textContent = monthName;
+
+        const now = new Date();
+        const isCurrent = (activeYear === now.getFullYear() && activeMonth === now.getMonth());
+        btnTodayShortcut.style.display = isCurrent ? 'none' : 'inline-block';
+      }
+
+      function getActiveMonthPrefix() {
+        return `${activeYear}-${String(activeMonth + 1).padStart(2, '0')}`;
+      }
+
+      function switchTab(tabId) {
+        tabContents.forEach(c => {
+          if (c.id === tabId) {
+            c.classList.add('active');
+            c.style.display = 'block';
+          } else {
+            c.classList.remove('active');
+            c.style.display = 'none';
+          }
+        });
+
+        tabButtons.forEach(btn => {
+          if (btn.getAttribute('data-tab') === tabId) {
+            btn.classList.add('active');
+          } else {
+            btn.classList.remove('active');
+          }
+        });
+
+        if (tabId === 'tab-add' && txTitle) {
+          setTimeout(() => txTitle.focus(), 100);
+        }
+
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+
+      function setFormMode(mode) {
+        formMode = mode;
+        txCategory.innerHTML = '';
+
+        if (mode === 'expense') {
+          btnToggleExpense.className = 'btn-type-toggle active-expense';
+          btnToggleIncome.className = 'btn-type-toggle';
+          formHeaderTitle.textContent = "Yangi xarajat kiritish";
+          labelTxTitle.textContent = "Xarajat nomi";
+          txTitle.placeholder = "Masalan: Bozorlik, Go'sht, Dorixona, Taxi...";
+          btnSubmitForm.textContent = "Xarajatni saqlash";
+          btnSubmitForm.className = "btn-submit-main btn-submit-expense";
+
+          CATEGORIES_EXPENSE.forEach(cat => {
+            const opt = document.createElement('option');
+            opt.value = cat.name;
+            opt.textContent = cat.name;
+            txCategory.appendChild(opt);
+          });
+        } else {
+          btnToggleIncome.className = 'btn-type-toggle active-income';
+          btnToggleExpense.className = 'btn-type-toggle';
+          formHeaderTitle.textContent = "Yangi daromad kiritish";
+          labelTxTitle.textContent = "Daromad manbasi / nomi";
+          txTitle.placeholder = "Masalan: Oylik maosh, Pensiya, Qo'shimcha daromad...";
+          btnSubmitForm.textContent = "+ Daromadni saqlash";
+          btnSubmitForm.className = "btn-submit-main btn-submit-income";
+
+          CATEGORIES_INCOME.forEach(cat => {
+            const opt = document.createElement('option');
+            opt.value = cat.name;
+            opt.textContent = cat.name;
+            txCategory.appendChild(opt);
+          });
+        }
+      }
+
+      function getTodayDateString() {
+        const d = new Date();
+        const year = d.getFullYear();
+        const month = String(d.getMonth() + 1).padStart(2, '0');
+        const day = String(d.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+      }
+
+      function formatCurrency(num) {
+        if (num === null || num === undefined || isNaN(num)) return "0 so'm";
+        const formatted = Math.round(Number(num))
+          .toString()
+          .replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+        return `${formatted} so'm`;
+      }
+
+      function formatDate(dateStr) {
+        if (!dateStr) return '';
+        const parts = dateStr.split('-');
+        if (parts.length === 3) {
+          return `${parts[2]}.${parts[1]}.${parts[0]}`;
+        }
+        return dateStr;
+      }
+
+      function getCategoryKey(catName, type) {
+        if (type === 'income') return 'income';
+        const found = CATEGORIES_EXPENSE.find(c => c.name === catName);
+        return found ? found.key : 'boshqa';
+      }
+
+      function loadTransactions() {
+        try {
+          const data = localStorage.getItem(STORAGE_KEY);
+          if (data) {
+            const list = JSON.parse(data);
+            return list.map(item => ({
+              id: item.id || ('tx_' + Math.random()),
+              type: item.type || 'expense',
+              title: item.title || "Xarajat",
+              amount: parseFloat(item.amount) || 0,
+              category: item.category || "Boshqa xarajatlar",
+              date: item.date || getTodayDateString()
+            }));
+          }
+        } catch (e) {
+          console.error("LocalStorage xatosi:", e);
+        }
+        saveTransactions(DEFAULT_SAMPLE_DATA);
+        return [...DEFAULT_SAMPLE_DATA];
+      }
+
+      function saveTransactions(list) {
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
+        } catch (e) {
+          console.error("LocalStorage saqlash xatosi:", e);
+        }
+      }
+
+      function loadBudget() {
+        try {
+          const saved = localStorage.getItem(BUDGET_KEY);
+          if (saved !== null && !isNaN(saved)) {
+            return parseFloat(saved);
+          }
+        } catch (e) {
+          console.error("Budget yuklash xatosi:", e);
+        }
+        return 5000000;
+      }
+
+      function saveBudget(val) {
+        try {
+          localStorage.setItem(BUDGET_KEY, val.toString());
+        } catch (e) {
+          console.error("Budget saqlash xatosi:", e);
+        }
+      }
+
+      function handleAddTransaction(e) {
+        e.preventDefault();
+
+        const title = txTitle.value.trim();
+        const amount = parseFloat(txAmount.value);
+        const category = txCategory.value;
+        const date = txDate.value || getTodayDateString();
+
+        if (!title) {
+          txTitle.focus();
+          return;
+        }
+
+        if (isNaN(amount) || amount <= 0) {
+          txAmount.focus();
+          return;
+        }
+
+        const newTx = {
+          id: 'tx_' + Date.now(),
+          type: formMode,
+          title,
+          amount,
+          category,
+          date
+        };
+
+        transactions.unshift(newTx);
+        saveTransactions(transactions);
+
+        const [y, m] = date.split('-');
+        if (y && m) {
+          activeYear = parseInt(y, 10);
+          activeMonth = parseInt(m, 10) - 1;
+          updateMonthDisplay();
+        }
+
+        txTitle.value = '';
+        txAmount.value = '';
+        txDate.value = getTodayDateString();
+
+        showToast(formMode === 'income' ? "✓ Daromad muvaffaqiyatli saqlandi!" : "✓ Xarajat muvaffaqiyatli saqlandi!");
+        renderAll();
+      }
+
+      function showToast(msg) {
+        if (!addSuccessToast) return;
+        toastText.textContent = msg;
+        addSuccessToast.style.display = 'flex';
+        if (toastTimer) clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => {
+          addSuccessToast.style.display = 'none';
+        }, 2800);
+      }
+
+      function handleDeleteTransaction(e) {
+        const btn = e.target.closest('.btn-delete');
+        if (!btn) return;
+
+        const id = btn.getAttribute('data-id');
+        if (!id) return;
+
+        transactions = transactions.filter(item => item.id !== id);
+        saveTransactions(transactions);
+        renderAll();
+      }
+
+      function handleClearAll() {
+        if (transactions.length === 0) {
+          alert("Hozircha tozalash uchun ma'lumotlar mavjud emas.");
+          return;
+        }
+
+        const confirmed = confirm("Barcha kiritilgan xarajat va daromadlar o'chirilsinmi? Bu amalni ortga qaytarib bo'lmaydi.");
+        if (confirmed) {
+          transactions = [];
+          saveTransactions(transactions);
+          renderAll();
+        }
+      }
+
+      function handleCopyTelegramReport() {
+        const ymPrefix = getActiveMonthPrefix();
+        const monthItems = transactions.filter(t => t.date && t.date.startsWith(ymPrefix));
+
+        const totalIncome = monthItems.filter(t => t.type === 'income')
+          .reduce((sum, t) => sum + Number(t.amount || 0), 0);
+
+        const totalExpense = monthItems.filter(t => t.type === 'expense')
+          .reduce((sum, t) => sum + Number(t.amount || 0), 0);
+
+        const net = totalIncome - totalExpense;
+        const monthName = MONTH_NAMES[activeMonth];
+
+        const catTotals = {};
+        monthItems.filter(t => t.type === 'expense').forEach(t => {
+          catTotals[t.category] = (catTotals[t.category] || 0) + Number(t.amount || 0);
+        });
+
+        let topCat = "—";
+        let topCatVal = 0;
+        for (const [cat, sum] of Object.entries(catTotals)) {
+          if (sum > topCatVal) {
+            topCatVal = sum;
+            topCat = cat;
+          }
+        }
+
+        const reportText = 
+`📊 Oilaviy Byudjet Hisoboti (${monthName}, ${activeYear})
+
+🟢 Jami Kirim: +${formatCurrency(totalIncome)}
+🔴 Jami Chiqim: -${formatCurrency(totalExpense)}
+💰 Qolgan Sof Qoldiq: ${formatCurrency(net)}
+${topCatVal > 0 ? `🏆 Eng ko'p sarf: ${topCat} (${formatCurrency(topCatVal)})` : ''}
+
+📱 "Oilaviy Byudjet" orqali hisoblandi.`;
+
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(reportText).then(() => {
+            alert("✓ Oylik hisobot nusxalandi! Endi uni Telegramdagi oilaviy guruhga osongina 'Вставить' (Paste) qilib yuborishingiz mumkin.");
+          }).catch(() => {
+            fallbackCopy(reportText);
+          });
+        } else {
+          fallbackCopy(reportText);
+        }
+      }
+
+      function fallbackCopy(text) {
+        window.prompt("Hisobot matnini nusxalab oling:", text);
+      }
+
+      function openBudgetModal() {
+        budgetInput.value = monthlyBudget;
+        budgetModal.style.display = 'flex';
+        budgetInput.focus();
+      }
+
+      function closeBudgetModal() {
+        budgetModal.style.display = 'none';
+      }
+
+      function handleSaveBudget(e) {
+        e.preventDefault();
+        const val = parseFloat(budgetInput.value);
+        if (isNaN(val) || val < 0) {
+          budgetInput.focus();
+          return;
+        }
+        monthlyBudget = val;
+        saveBudget(monthlyBudget);
+        closeBudgetModal();
+        renderAll();
+      }
+
+      function renderAll() {
+        const ymPrefix = getActiveMonthPrefix();
+        const monthItems = transactions.filter(t => t.date && t.date.startsWith(ymPrefix));
+
+        renderOverview(monthItems);
+        renderBudget(monthItems);
+        renderRecentTransactions(monthItems);
+        renderAnalytics(monthItems);
+        renderHistory();
+      }
+
+      function renderOverview(monthItems) {
+        const totalIncome = monthItems.filter(t => t.type === 'income')
+          .reduce((sum, t) => sum + Number(t.amount || 0), 0);
+
+        const totalExpense = monthItems.filter(t => t.type === 'expense')
+          .reduce((sum, t) => sum + Number(t.amount || 0), 0);
+
+        const net = totalIncome - totalExpense;
+
+        monthIncomeDisplay.textContent = `+ ${formatCurrency(totalIncome)}`;
+        monthExpenseDisplay.textContent = `- ${formatCurrency(totalExpense)}`;
+
+        netBalanceDisplay.textContent = formatCurrency(net);
+        if (net < 0) {
+          netBalanceDisplay.classList.add('is-negative');
+        } else {
+          netBalanceDisplay.classList.remove('is-negative');
+        }
+      }
+
+      function renderBudget(monthItems) {
+        const totalExpense = monthItems.filter(t => t.type === 'expense')
+          .reduce((sum, t) => sum + Number(t.amount || 0), 0);
+
+        let percent = 0;
+        if (monthlyBudget > 0) {
+          percent = Math.round((totalExpense / monthlyBudget) * 100);
+        }
+
+        budgetPercentText.textContent = `${percent}% ishlatildi (${formatCurrency(totalExpense)})`;
+        budgetPlanSubtext.textContent = `Limit: ${formatCurrency(monthlyBudget)}`;
+
+        budgetProgressFill.className = 'budget-progress-fill';
+        budgetProgressFill.style.width = `${Math.min(percent, 100)}%`;
+
+        if (percent >= 100) {
+          budgetProgressFill.classList.add('fill-danger');
+        } else if (percent >= 80) {
+          budgetProgressFill.classList.add('fill-warning');
+        } else {
+          budgetProgressFill.classList.add('fill-safe');
+        }
+      }
+
+      function renderRecentTransactions(monthItems) {
+        recentTransactionsList.innerHTML = '';
+        const itemsToShow = (monthItems.length > 0 ? monthItems : transactions).slice(0, 4);
+
+        if (itemsToShow.length === 0) {
+          recentTransactionsList.innerHTML = `
+            <li style="text-align: center; padding: 18px 0; color: var(--text-muted); font-size: 13px;">
+              Hozircha amallar kiritilmadi
+            </li>
+          `;
+          return;
+        }
+
+        itemsToShow.forEach(item => {
+          const isIncome = item.type === 'income';
+          const catKey = getCategoryKey(item.category, item.type);
+          const li = document.createElement('li');
+          li.className = `expense-item ${isIncome ? 'is-income-item' : 'is-expense-item'}`;
+          li.innerHTML = `
+            <div class="expense-left">
+              <div class="expense-name-row">
+                <span class="expense-name">${escapeHtml(item.title)}</span>
+                <span class="expense-badge badge-${catKey}">${escapeHtml(item.category)}</span>
+              </div>
+              <span class="expense-date">${formatDate(item.date)}</span>
+            </div>
+            <div class="expense-right">
+              <span class="expense-amount ${isIncome ? 'text-income' : 'text-expense'}">
+                ${isIncome ? '+' : '-'} ${formatCurrency(item.amount)}
+              </span>
+              <button type="button" class="btn-delete" data-id="${item.id}" title="O'chirish">
+                ✕
+              </button>
+            </div>
+          `;
+          recentTransactionsList.appendChild(li);
+        });
+      }
+
+      function renderAnalytics(monthItems) {
+        categoryBreakdownList.innerHTML = '';
+        incomeSourcesList.innerHTML = '';
+
+        const expenseItems = monthItems.filter(t => t.type === 'expense');
+        const totalExpense = expenseItems.reduce((s, t) => s + Number(t.amount || 0), 0);
+
+        const expenseMap = {};
+        CATEGORIES_EXPENSE.forEach(c => {
+          expenseMap[c.name] = { total: 0, count: 0, key: c.key };
+        });
+
+        expenseItems.forEach(item => {
+          if (!expenseMap[item.category]) {
+            expenseMap[item.category] = { total: 0, count: 0, key: 'boshqa' };
+          }
+          expenseMap[item.category].total += Number(item.amount || 0);
+          expenseMap[item.category].count += 1;
+        });
+
+        CATEGORIES_EXPENSE.forEach(cat => {
+          const data = expenseMap[cat.name] || { total: 0, count: 0, key: cat.key };
+          const percent = totalExpense > 0 ? Math.round((data.total / totalExpense) * 100) : 0;
+
+          const itemEl = document.createElement('div');
+          itemEl.className = 'category-item';
+          itemEl.innerHTML = `
+            <div class="category-header">
+              <div class="category-name-wrap">
+                <span class="category-dot color-${cat.key}"></span>
+                <span class="category-name">${cat.name}</span>
+              </div>
+              <span class="category-sum">${formatCurrency(data.total)}</span>
+            </div>
+            <div class="progress-bar-bg">
+              <div class="progress-bar-fill color-${cat.key}" style="width: ${percent}%;"></div>
+            </div>
+            <div class="category-meta">
+              <span>${percent}% ulush</span>
+              <span>${data.count} ta xarajat</span>
+            </div>
+          `;
+          categoryBreakdownList.appendChild(itemEl);
+        });
+
+        const incomeItems = monthItems.filter(t => t.type === 'income');
+        const totalIncome = incomeItems.reduce((s, t) => s + Number(t.amount || 0), 0);
+
+        const incomeMap = {};
+        CATEGORIES_INCOME.forEach(c => {
+          incomeMap[c.name] = { total: 0, count: 0 };
+        });
+
+        incomeItems.forEach(item => {
+          if (!incomeMap[item.category]) {
+            incomeMap[item.category] = { total: 0, count: 0 };
+          }
+          incomeMap[item.category].total += Number(item.amount || 0);
+          incomeMap[item.category].count += 1;
+        });
+
+        CATEGORIES_INCOME.forEach(cat => {
+          const data = incomeMap[cat.name] || { total: 0, count: 0 };
+          if (data.total > 0 || incomeItems.length === 0) {
+            const percent = totalIncome > 0 ? Math.round((data.total / totalIncome) * 100) : 0;
+            const itemEl = document.createElement('div');
+            itemEl.className = 'category-item';
+            itemEl.innerHTML = `
+              <div class="category-header">
+                <div class="category-name-wrap">
+                  <span class="category-dot" style="background:#059669;"></span>
+                  <span class="category-name">${cat.name}</span>
+                </div>
+                <span class="category-sum" style="color:#059669;">+ ${formatCurrency(data.total)}</span>
+              </div>
+              <div class="progress-bar-bg">
+                <div class="progress-bar-fill" style="width: ${percent}%; background:#059669;"></div>
+              </div>
+              <div class="category-meta">
+                <span>${percent}% jami kirimdan</span>
+                <span>${data.count} ta tushum</span>
+              </div>
+            `;
+            incomeSourcesList.appendChild(itemEl);
+          }
+        });
+      }
+
+      function renderHistory() {
+        const query = searchInput ? searchInput.value.toLowerCase().trim() : '';
+        const selectedType = filterType ? filterType.value : 'all';
+        const onlyMonth = checkOnlySelectedMonth ? checkOnlySelectedMonth.checked : true;
+        const ymPrefix = getActiveMonthPrefix();
+
+        const filtered = transactions.filter(item => {
+          const matchQuery = !query || item.title.toLowerCase().includes(query) || item.category.toLowerCase().includes(query);
+          const matchType = (selectedType === 'all') || (item.type === selectedType);
+          const matchMonth = !onlyMonth || (item.date && item.date.startsWith(ymPrefix));
+          return matchQuery && matchType && matchMonth;
+        });
+
+        historyCounter.textContent = `${filtered.length} ta`;
+        expensesList.innerHTML = '';
+
+        if (filtered.length === 0) {
+          emptyState.style.display = 'block';
+        } else {
+          emptyState.style.display = 'none';
+
+          filtered.forEach(item => {
+            const isIncome = item.type === 'income';
+            const catKey = getCategoryKey(item.category, item.type);
+            const li = document.createElement('li');
+            li.className = `expense-item ${isIncome ? 'is-income-item' : 'is-expense-item'}`;
+            li.innerHTML = `
+              <div class="expense-left">
+                <div class="expense-name-row">
+                  <span class="expense-name">${escapeHtml(item.title)}</span>
+                  <span class="expense-badge badge-${catKey}">${escapeHtml(item.category)}</span>
+                </div>
+                <span class="expense-date">${formatDate(item.date)}</span>
+              </div>
+              <div class="expense-right">
+                <span class="expense-amount ${isIncome ? 'text-income' : 'text-expense'}">
+                  ${isIncome ? '+' : '-'} ${formatCurrency(item.amount)}
+                </span>
+                <button type="button" class="btn-delete" data-id="${item.id}" title="O'chirish">
+                  ✕
+                </button>
+              </div>
+            `;
+            expensesList.appendChild(li);
+          });
+        }
+      }
+
+      function escapeHtml(str) {
+        if (!str) return '';
+        return str
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;")
+          .replace(/'/g, "&#039;");
+      }
+
+    })();
+  </script>
+</body>
+</html>
